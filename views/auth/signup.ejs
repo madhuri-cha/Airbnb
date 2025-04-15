@@ -1,0 +1,57 @@
+<%- include('../partials/head') %>
+  </head>
+  <body>
+    <%- include('../partials/nav', {isLoggedIn}) %>
+    <main class="container mx-auto mt-8 p-8 bg-white rounded-lg shadow-md">
+      <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Register as new user</h1>
+      <form action="/auth/signup" method="POST" class="max-w-md mx-auto">
+        <%if(typeof erros != undefined && errors && erros.length > 0)
+        { %>
+            <div>
+                <% errors.forEach(error => { %>
+                <li><%= error%></li> 
+                
+                <% }) %>
+            </div>
+            <% } %>
+        <input
+          type="text"
+          name="username"
+          placeholder="Enter your user Name"
+          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required/>
+          <input
+          type="text"
+          name="email"
+          placeholder="test@pop.com"
+          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required/>
+        <input
+          type="password"
+          name="password"
+          placeholder="enter your password"
+          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required/>
+
+          <input
+          type="password"
+          name="confirmPassword"
+          placeholder="confirm your password"
+          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required/>  
+        <div>
+        <p>UserType:</p> 
+        <label for="host">Host:
+            <input type="radio" value="host" name="userType" id="host">
+        </label>      
+        <label for="guest">Guest
+            <input type="radio" value="guest" name="userType" id="guest">
+        </label>
+        </div>  
+        <div> 
+            <input type="checkbox"  name="terms" id="terms" required> 
+            <label for="terms">I agree to terms and condition</label>
+        </div>
+       
+
+        <input type="submit" value="Register" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition duration-300" />
+    </form>
+    </main>
+  </body>
+</html>

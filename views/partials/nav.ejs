@@ -47,10 +47,19 @@
     <%}%>  
       <li>
         <% if(!isLoggedIn) { %>
-        <a href="/login">Login</a>
+          <li>
+            <a href="/signup">SignUp</a>
+          </li>
+          <li>
+            <a href="/login">Login</a>
+          </li>
         <% } 
         else { %>
-        <a href="/logout">Logout</a>
+       <li>
+        <form action="/logout" methods="POST">
+          <a href="/logout">Logout</a>
+        </form>
+       </li>   
         <% } %>
       </li>
     </ul>
