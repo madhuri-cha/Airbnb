@@ -2,76 +2,104 @@
 const path = require('path');
 
 // External Module
-const express= require('express');
+const express = require('express');
+const session = require('express-session');
+const mongodbStore = require('connect-mongodb-session')(session);
+const mongoose = require('mongoose');
 
-const session=require('express-session');
-const mongodbStore=require('connect-mongodb-session')(session);
-//Local Module
-const storeRouter = require("./routes/storeRouter")
-const hostRouter = require("./routes/hostRouter")
-const rootDir = require("./utils/pathUtil");
-const errorsController = require("./controllers/errors");
-const mongoose= require('mongoose');
+// Local Module
+const storeRouter = require('./routes/storeRouter');
+const hostRouter = require('./routes/hostRouter');
 const authRouter = require('./routes/authRouter');
-const DB_PATH = "mongodb+srv://madhurichavan15122003:madhuri123@cluster0.ebzbryk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const rootDir = require('./utils/pathUtil');
+const errorsController = require('./controllers/errors');
 
-const app=express();
+const DB_PATH =
+  'mongodb+srv://madhurichavan15122003:madhuri123@cluster0.ebzbryk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
+const app = express();
+
+// View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-const store= new mongodbStore({ //to store session data in MongoDB
+// Session store
+const store = new mongodbStore({
   uri: DB_PATH,
-  collection:'sessions'// 
-})
-app.use(express.urlencoded());//
-// app.use("/host", hostRouter);
-//now internally session is destroy
-app.use(session(
-  {
-  secret:"my secret", //saves the session id in the cookie, which is used to identify the session on the server
-  resave:false, // resave is used to save the session even if it is not modified
-  saveUninitialized:true,//saveUninitialized is used to save the session even if it is not initialized
-  store:store,//store is used to save the session in the database
-  }
-));
-//we need to read a session:first way
-app.use((req, res, next)=>{
-  console.log("session value:", req.session);
-  req.isLoggedIn=req.session.isLoggedIn; //to check if the user is logged in or not
+  collection: 'sessions',
+});
+
+// Body parser — must come before routes
+app.use(express.urlencoded({ extended: true }));
+
+// Static files
+app.use(express.static(path.join(rootDir, 'public')));
+
+// Session
+app.use(
+  session({
+    secret: 'my secret',
+    resave: false,
+    saveUninitialized: true,
+    store: store,
+  })
+);
+
+// Attach login state + user info to every request
+app.use((req, res, next) => {
+  req.isLoggedIn = req.session.isLoggedIn || false;
+  req.userType = req.session.userType || null;
+  req.userId = req.session.userId || null;
+  req.username = req.session.username || null;
   next();
 });
-//second way to replace req.cookie with req.session
 
-// app.use((req, res, next)=>{
-//   console.log("cookie check middleware", req.get('cookie'));
-//   req.isLoggedIn=req.get('cookie')? req.get('cookie').split('=')[1] === 'true' : false;
-//   console.log(req.isLoggedIn);
-//   next();
-// });
+// Auth routes (login, logout, signup)
 app.use(authRouter);
+
+// Store routes (public)
 app.use(storeRouter);
 
-app.use("/host", (req, res, next)=>{
-if(req.isLoggedIn){
-  next();
-}
-else{
-  res.redirect("/login");
-}
+// Host routes — protected (must be logged in AND be a host)
+app.use('/host', (req, res, next) => {
+  if (req.isLoggedIn && req.userType === 'host') {
+    next();
+  } else if (!req.isLoggedIn) {
+    res.redirect('/login');
+  } else {
+    // Logged in but not a host
+    res.status(403).render('403', {
+      pageTitle: 'Access Denied',
+      currentPage: '',
+      isLoggedIn: req.isLoggedIn,
+      userType: req.userType,
+    });
+  }
 });
-app.use("/host", hostRouter);
+app.use('/host', hostRouter);
 
-app.use(express.static(path.join(rootDir, 'public')))
-
+// 404 fallback
 app.use(errorsController.pageNotFound);
 
-const PORT = 3000;
-// const DB_PATH = "mongodb+srv://madhurichavan15122003:madhuri123@cluster0.ebzbryk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const PORT = process.env.PORT || 3000;
 
-mongoose.connect(DB_PATH).then(() => {
-  console.log('Connected to Mongo');
-  app.listen(PORT, () => {
-    console.log(`Server running on address http://localhost:${PORT}`);
+mongoose
+  .connect(DB_PATH)
+  .then(() => {
+    console.log('Connected to Mongo');
+    const server = app.listen(PORT, () => {
+      console.log(`Server running on address http://localhost:${PORT}`);
+    });
+
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Try using a different PORT environment variable or stop the process using this port.`);
+        process.exit(1);
+      }
+      throw err;
+    });
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
   });
-});

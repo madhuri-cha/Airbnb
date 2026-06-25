@@ -1,67 +1,68 @@
 <header class="bg-red-500 text-white p-4 shadow-md">
   <nav class="container mx-auto flex justify-between items-center">
-    <ul class="flex space-x-4">
+    <ul class="flex space-x-4 items-center">
       <li>
         <a
           href="/"
-          class="<%= currentPage === 'index' ? 'bg-red-400' : 'hover:bg-red-400' %> py-2 px-4 rounded transition duration-300"
-          >airbnb</a
+          class="<%= currentPage === 'index' ? 'active' : '' %> py-2 px-4 rounded transition duration-300"
+          >Airbnb</a
         >
       </li>
-      <% if(isLoggedIn) { %>
-      <li>
-        <a
-          href="/homes"
-          class="<%= currentPage === 'Home' ? 'bg-red-400' : 'hover:bg-red-400' %> py-2 px-4 rounded transition duration-300"
-          >Homes-List</a
-        >
-      </li>
-      <li>
-        <a
-          href="/favourites"
-          class="<%= currentPage === 'favourites' ? 'bg-red-400' : 'hover:bg-red-400' %> py-2 px-4 rounded transition duration-300"
-          >Favourites</a
-        >
-      </li>
-      <li>
-        <a
-          href="/bookings"
-          class="<%= currentPage === 'bookings' ? 'bg-red-400' : 'hover:bg-red-400' %> py-2 px-4 rounded transition duration-300"
-          >Bookings</a
-        >
-      </li>
-      <li>
-        <a
-          href="/host/host-home-list"
-          class="<%= currentPage === 'host-homes' ? 'bg-red-400' : 'hover:bg-red-400' %> py-2 px-4 rounded transition duration-300"
-          >Host Homes</a
-        >
-      </li>
-      <li>
-        <a
-          href="/host/add-home"
-          class="<%= currentPage === 'addHome' ? 'bg-red-400' : 'hover:bg-red-400' %> py-2 px-4 rounded transition duration-300"
-          >Add Home</a
-        >
-      </li>
-    <%}%>  
-      <li>
-        <% if(!isLoggedIn) { %>
+
+      <% if (isLoggedIn) { %>
+
+        <%# Links visible to ALL logged-in users %>
+        <li>
+          <a
+            href="/homes"
+            class="<%= currentPage === 'Home' ? 'active' : '' %> py-2 px-4 rounded transition duration-300"
+            >Homes</a
+          >
+        </li>
+        <li>
+          <a
+            href="/bookings"
+            class="<%= currentPage === 'bookings' ? 'active' : '' %> py-2 px-4 rounded transition duration-300"
+            >Bookings</a
+          >
+        </li>
+
+        <%# Host-only links %>
+        <% if (userType === 'host') { %>
           <li>
-            <a href="/signup">SignUp</a>
+            <a
+              href="/host/host-home-list"
+              class="<%= currentPage === 'host-homes' ? 'active' : '' %> py-2 px-4 rounded transition duration-300"
+              >My Listings</a
+            >
           </li>
           <li>
-            <a href="/login">Login</a>
+            <a
+              href="/host/add-home"
+              class="<%= currentPage === 'addHome' ? 'active' : '' %> py-2 px-4 rounded transition duration-300"
+              >Add Home</a
+            >
           </li>
-        <% } 
-        else { %>
-       <li>
-        <form action="/logout" methods="POST">
-          <a href="/logout">Logout</a>
-        </form>
-       </li>   
         <% } %>
-      </li>
+
+        <li>
+          <a
+            href="/logout"
+            class="py-2 px-4 rounded transition duration-300"
+            >Logout</a
+          >
+        </li>
+
+      <% } else { %>
+
+        <li>
+          <a href="/signup" class="<%= currentPage === 'signup' ? 'active' : '' %> py-2 px-4 rounded transition duration-300">Sign Up</a>
+        </li>
+        <li>
+          <a href="/login" class="<%= currentPage === 'login' ? 'active' : '' %> py-2 px-4 rounded transition duration-300">Login</a>
+        </li>
+
+      <% } %>
     </ul>
   </nav>
 </header>

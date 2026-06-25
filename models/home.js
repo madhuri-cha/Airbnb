@@ -1,31 +1,39 @@
 const mongoose = require('mongoose');
 const favourite = require('./favourite');
+const Booking = require('./booking');
 
 const homeSchema = mongoose.Schema({
+  hostId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   houseName: {
     type: String,
-    required: true
+    required: true,
   },
   price: {
     type: Number,
-    required: true
+    required: true,
   },
   location: {
     type: String,
-    required: true
+    required: true,
   },
   rating: {
     type: Number,
-    required: true
+    required: true,
   },
   photoUrl: String,
   description: String,
 });
 
-homeSchema.pre('findOneAndDelete', async function(next) {
-  console.log('Came to pre hook while deleting a home');
+homeSchema.pre('findOneAndDelete', async function (next) {
   const homeId = this.getQuery()._id;
-  await favourite.deleteMany({houseId: homeId});
+  await Promise.all([
+    favourite.deleteMany({ houseId: homeId }),
+    Booking.deleteMany({ houseId: homeId }),
+  ]);
   next();
 });
 

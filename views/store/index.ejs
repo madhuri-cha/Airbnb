@@ -1,32 +1,237 @@
-<%- include('../partials/head', {pageTitle:pageTitle}) %>
-  </head>
-  <body>
-    <%- include('../partials/nav', {isLoggedIn:isLoggedIn}) %>
-    <main class="container mx-auto bg-white shadow-lg rounded-lg p-8 mt-10 max-w-6xl">
-      <h2 class="text-3xl text-red-500 font-bold text-center mb-6">
-        Welcome to airbnb index page:
-      </h2>
-      <div class="flex flex-wrap justify-center gap-6">
-        <% registeredHomes.forEach(home => { %>
-          <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 w-full max-w-sm">
-            <img src="<%= home.photoUrl %>" alt="<%= home.houseName %>" class="w-full h-48 object-cover">
-            <div class="p-4">
-              <h3 class="text-xl font-semibold text-gray-800 mb-2"><%= home.houseName %></h3>
-              <p class="text-gray-600 mb-2"><i class="fas fa-map-marker-alt mr-2"></i><%= home.location %></p>
-              <div class="flex justify-between items-center mb-2">
-                <span class="text-lg font-bold text-red-500">Rs<%= home.price %> / night</span>
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-yellow-400 mr-1">
-                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-gray-700"><%= home.rating %></span>
+<%- include('../partials/head', { pageTitle: pageTitle }) %>
+</head>
+<body>
+  <%- include('../partials/nav', { isLoggedIn: isLoggedIn, userType: userType, currentPage: currentPage }) %>
+
+  <!-- ═══ HERO — Split Layout ═══ -->
+  <section class="hero-split">
+    <div class="hero-text-side">
+      <div class="hero-text-inner">
+        <div class="hero-eyebrow fade-up fade-up-1">Find Your Stay</div>
+        <h1 class="hero-heading fade-up fade-up-2">
+          Discover Homes<br>Made for You
+        </h1>
+        <p class="hero-sub fade-up fade-up-3">
+          Browse hand-picked homes from trusted hosts across India. Every stay is a new story.
+        </p>
+        <% if (!isLoggedIn) { %>
+          <div class="hero-cta-group fade-up fade-up-4">
+            <a href="/signup" class="btn-primary">Get Started</a>
+            <a href="/login" class="btn-ghost">Login</a>
+          </div>
+        <% } else { %>
+          <div class="hero-cta-group fade-up fade-up-4">
+            <a href="/homes" class="btn-primary">Browse Homes</a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+    <div class="hero-image-side">
+      <img
+        src="https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=900"
+        alt="Beautiful home"
+        onerror="this.onerror=null;this.src='https://placehold.co/900x520?text=Airbnb';"
+      />
+      <div class="hero-badge">
+        <div class="hero-badge-label">Available Now</div>
+        <div class="hero-badge-value"><%= registeredHomes.length %>+ Homes</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ STATS BAR ═══ -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-number"><%= registeredHomes.length %>+</div>
+      <div class="stat-label">Listed Homes</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">100+</div>
+      <div class="stat-label">Happy Guests</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">50+</div>
+      <div class="stat-label">Trusted Hosts</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">4.8★</div>
+      <div class="stat-label">Avg. Rating</div>
+    </div>
+  </div>
+
+  <!-- ═══ HOMES GRID ═══ -->
+  <div class="section-wrap">
+    <div class="section-header">
+      <div>
+        <div class="section-tag">Featured Listings</div>
+        <h2 class="section-title">Available Homes</h2>
+      </div>
+      <a href="/homes" class="btn-ghost">View All</a>
+    </div>
+
+    <% if (registeredHomes.length === 0) { %>
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width:72px;height:72px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        <h2>No homes listed yet</h2>
+        <p>Be the first to list your home and reach thousands of guests.</p>
+        <% if (!isLoggedIn) { %>
+          <a href="/signup" class="btn-primary" style="display:inline-flex;margin-top:8px;">Sign up as a Host</a>
+        <% } %>
+      </div>
+    <% } else { %>
+      <div class="homes-grid">
+        <% registeredHomes.forEach((home, i) => { %>
+          <div class="home-card fade-up" style="animation-delay: <%= (i % 3) * 0.12 %>s;">
+            <div class="home-card-img-wrap">
+              <span class="home-card-tag">For Rent</span>
+              <a href="/homes/<%= home._id %>">
+                <img
+                  src="<%= home.photoUrl %>"
+                  alt="<%= home.houseName %>"
+                  onerror="this.onerror=null;this.src='https://placehold.co/500x300?text=No+Image';"
+                />
+              </a>
+            </div>
+            <div class="home-card-body">
+              <div class="home-card-location">
+                <i class="fas fa-map-marker-alt"></i> <%= home.location %>
+              </div>
+              <div class="home-card-title"><%= home.houseName %></div>
+              <div class="home-card-footer">
+                <div class="home-card-price">
+                  Rs <%= home.price %> <span>/ night</span>
+                </div>
+                <div class="home-card-rating">
+                  <i class="fas fa-star" style="color:#f59e0b;"></i> <%= home.rating %>
                 </div>
               </div>
-              <button class="bg-green-300 p-2">Book</button>
+              <div class="home-card-actions">
+                <a href="/homes/<%= home._id %>" class="btn-details">Details</a>
+                <% if (isLoggedIn && userType === 'guest') { %>
+                  <a href="/homes/<%= home._id %>" class="btn-book">Book</a>
+                <% } else if (!isLoggedIn) { %>
+                  <a href="/login" class="btn-book">Book</a>
+                <% } %>
+              </div>
             </div>
           </div>
         <% }) %>
       </div>
-    </main>
-  </body>
+    <% } %>
+  </div>
+
+  <!-- ═══ WHY AIRBNB ═══ -->
+  <section class="why-section">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="text-align:center;padding:56px 40px 0;">
+        <div class="section-tag">Our Promise</div>
+        <h2 class="section-title">Why Choose Airbnb?</h2>
+      </div>
+      <div class="why-grid" style="margin-top:40px;">
+        <div class="why-card">
+          <span class="why-icon">🏠</span>
+          <h3>Unique Homes</h3>
+          <p>Stay in one-of-a-kind spaces — from cosy apartments to spacious villas — listed by real hosts.</p>
+        </div>
+        <div class="why-card">
+          <span class="why-icon">🔒</span>
+          <h3>Safe &amp; Secure</h3>
+          <p>Every booking is backed by secure authentication and verified listings you can trust.</p>
+        </div>
+        <div class="why-card">
+          <span class="why-icon">⭐</span>
+          <h3>Rated by Guests</h3>
+          <p>Every home shows real ratings so you always know what to expect before you book.</p>
+        </div>
+        <div class="why-card">
+          <span class="why-icon">💬</span>
+          <h3>Trusted Community</h3>
+          <p>Thousands of guests and hosts building genuine connections through every stay.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ BLOG / TRAVEL TIPS ═══ -->
+  <section class="blog-section">
+    <div class="section-wrap">
+      <div class="section-header">
+        <div>
+          <div class="section-tag">Inspiration</div>
+          <h2 class="section-title">Travel Tips &amp; Stories</h2>
+        </div>
+      </div>
+      <div class="blog-grid">
+
+        <article class="blog-card">
+          <img class="blog-card-img"
+            src="https://images.pexels.com/photos/1430677/pexels-photo-1430677.jpeg?auto=compress&cs=tinysrgb&w=600"
+            alt="Budget travel"
+            onerror="this.onerror=null;this.src='https://placehold.co/500x300?text=Blog';"
+          />
+          <div class="blog-card-body">
+            <span class="blog-tag">Travel Tips</span>
+            <h3>How to find the best stays on a budget</h3>
+            <p>Smart tips to stretch your travel budget without compromising on comfort or experience.</p>
+          </div>
+        </article>
+
+        <article class="blog-card">
+          <img class="blog-card-img"
+            src="https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=600"
+            alt="Hosting guide"
+            onerror="this.onerror=null;this.src='https://placehold.co/500x300?text=Blog';"
+          />
+          <div class="blog-card-body">
+            <span class="blog-tag">Hosting Guide</span>
+            <h3>5 tips to make your listing stand out</h3>
+            <p>Great photos, clear descriptions and fair pricing are the three pillars of a successful listing.</p>
+          </div>
+        </article>
+
+        <article class="blog-card">
+          <img class="blog-card-img"
+            src="https://images.pexels.com/photos/2325446/pexels-photo-2325446.jpeg?auto=compress&cs=tinysrgb&w=600"
+            alt="India destinations"
+            onerror="this.onerror=null;this.src='https://placehold.co/500x300?text=Blog';"
+          />
+          <div class="blog-card-body">
+            <span class="blog-tag">Destinations</span>
+            <h3>Top 5 hidden gems to visit in India</h3>
+            <p>Beyond the usual tourist trail — explore lesser-known destinations with incredible stays.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA BANNER — Split Layout ═══ -->
+  <% if (!isLoggedIn) { %>
+  <section class="cta-split">
+    <div class="cta-text-side">
+      <div class="cta-text-inner">
+        <div class="cta-eyebrow">Join Airbnb Today</div>
+        <h2 class="cta-heading">Ready to Host Your Home?</h2>
+        <p class="cta-sub">
+          Join thousands of hosts earning extra income by listing their space on Airbnb. It's free to sign up.
+        </p>
+        <a href="/signup" class="btn-cta">Start Hosting →</a>
+      </div>
+    </div>
+    <div class="cta-image-side">
+      <img
+        src="https://images.pexels.com/photos/1115804/pexels-photo-1115804.jpeg?auto=compress&cs=tinysrgb&w=900"
+        alt="Host your home"
+        onerror="this.onerror=null;this.src='https://placehold.co/900x360?text=Host';"
+      />
+    </div>
+  </section>
+  <% } %>
+
+  <%- include('../partials/footer') %>
+
+</body>
 </html>

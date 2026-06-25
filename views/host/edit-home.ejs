@@ -1,9 +1,9 @@
-<%- include('../partials/head',{pageTitle:pageTitle}) %>
+<%- include('../partials/head',{pageTitle:pageTitle, isHostPage:true}) %>
   </head>
   <body>
-    <%- include('../partials/nav') %>
+    <%- include('../partials/nav', { isLoggedIn: isLoggedIn, userType: userType, currentPage: currentPage }) %>
     <main class="container mx-auto mt-8 p-8 bg-white rounded-lg shadow-md">
-      <h1 class="text-3xl font-bold mb-6 text-center text-gray-800"><%= editing ? "Edit" : "Register"%> Your Home on AirBnB</h1>
+      <h1 class="text-3xl font-bold mb-6 text-center text-gray-800"><%= editing ? "Edit" : "Register"%> Your Home on Airbnb</h1>
       <form action="/host/<%= editing ? "edit-home" : "add-home"%>" method="POST" class="max-w-md mx-auto">
   
         
@@ -17,7 +17,9 @@
           class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
           
         <input
-          type="text"
+          type="number"
+          step="0.01"
+          min="0"
           name="price"
           value="<%= editing ? home.price : ''%>"
           placeholder="Price Per Night"
@@ -29,7 +31,10 @@
           placeholder="Location"
           class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
         <input
-          type="text"
+          type="number"
+          step="0.1"
+          min="0"
+          max="5"
           name="rating"
           value="<%= editing ? home.rating : ''%>"
           placeholder="Rating"
@@ -47,5 +52,6 @@
         <input type="submit" value="<%= editing ? "Update Home" : "Add Home"%>" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition duration-300" />
       </form>
     </main>
+    <%- include('../partials/footer') %>
   </body>
 </html>

@@ -1,10 +1,54 @@
-<%- include('../partials/head',{pageTitle:pageTitle}) %>
-  </head>
-  <body>
-    <%- include('partials/nav') %>
-    <main class="container mx-auto mt-20 text-center">
-      <h2 class="text-6xl font-bold text-red-500 mb-4">My Bookings</h2>
-      <p class="text-2xl text-gray-700 mb-8">Bookings will appear here</p>
-    </main>
-  </body>
+<%- include('../partials/head', { pageTitle: pageTitle, isStorePage: true }) %>
+
+</head>
+
+<body>
+
+  <%- include('../partials/nav', { isLoggedIn: isLoggedIn, userType: userType, currentPage: currentPage }) %>
+
+  <main class="container page-panel mt-16 max-w-6xl">
+    <section class="page-banner">
+      <div class="banner-content">
+        <span class="section-tag">Guest Dashboard</span>
+        <h2 class="section-title">Bookings</h2>
+        <p class="banner-copy">Manage your upcoming trips, revisit favorite stays, and keep every booking detail organized in one place.</p>
+      </div>
+    </section>
+
+    <% if (bookings && bookings.length > 0) { %>
+      <div class="bookings-grid">
+        <% bookings.forEach(b => { %>
+          <% const h = b.houseId; %>
+          <div class="booking-card">
+            <% if (h && h.photoUrl) { %>
+              <img src="<%= h.photoUrl %>" alt="<%= h.houseName %>" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=No+Image';" />
+            <% } %>
+            <div class="booking-card-body">
+              <h3 class="text-xl font-semibold text-gray-800 mb-2"><%= h ? h.houseName : 'Deleted Home' %></h3>
+              <p>Location: <strong><%= h ? h.location : '—' %></strong></p>
+              <p class="text-green-600 font-bold mt-2">Price: Rs<%= h ? h.price : '—' %> / night</p>
+              <p class="text-sm text-gray-500 mt-2">Booked on: <%= new Date(b.createdAt).toLocaleString() %></p>
+              <% if (h) { %>
+                <div class="flex items-center gap-4">
+                  <a href="/homes/<%= h._id %>">View stay</a>
+                  <form action="/bookings/cancel/<%= b._id %>" method="POST" onsubmit="return confirm('Cancel this booking?');">
+                    <button type="submit" class="cancel-button">Cancel</button>
+                  </form>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-3">No bookings yet</h2>
+        <p class="text-gray-600">Click Book on a home to start your first trip and save the perfect place for later.</p>
+      </div>
+    <% } %>
+
+  </main>
+  <%- include('../partials/footer') %>
+
+</body>
 </html>

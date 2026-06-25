@@ -1,45 +1,62 @@
 <%- include('../partials/head',{pageTitle:pageTitle}) %>
   </head>
   <body>
-      <%- include('../partials/nav') %>
-      <main class="container mx-auto bg-white shadow-lg rounded-lg p-8 mt-10 max-w-6xl">
-          <h2 class="text-3xl text-red-500 font-bold text-center mb-6">
-              Details of <%= home.houseName %>
-          </h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div class="rounded-lg overflow-hidden">
-                  <img src="<%= home.photoUrl %>" alt="<%= home.name %>" class="w-full h-96 object-cover">
-              </div>
-              
-              <div class="space-y-6">
-                  <div class="border-b pb-4">
-                      <h3 class="text-2xl font-semibold mb-2">Description</h3>
-                      <p class="text-gray-600"><%= home.description %></p>
-                  </div>
-
-                  <div class="border-b pb-4">
-                      <h3 class="text-2xl font-semibold mb-2">Location</h3>
-                      <p class="text-gray-600"><%= home.location %></p>
-                  </div>
-                  
-                  <div class="border-b pb-4">
-                      <h3 class="text-2xl font-semibold mb-2">Price</h3>
-                      <p class="text-green-600 text-xl font-bold">$<%= home.price %> / night</p>
-                  </div>
-                  
-                  <div class="border-b pb-4">
-                      <h3 class="text-2xl font-semibold mb-2">Rating</h3>
-                      <div class="flex items-center">
-                          <span class="text-yellow-400 text-xl">★</span>
-                          <span class="ml-2 text-lg"><%= home.rating %> / 5</span>
-                      </div>
-                  </div>
-                  <div class="mt-2">
-                    <%- include('../partials/favourite') %>
-                  </div>
-              </div>
+      <%- include('../partials/nav', { isLoggedIn: isLoggedIn, userType: userType, currentPage: currentPage }) %>
+      <main class="container page-panel mt-10 max-w-7xl">
+        <section class="page-banner">
+          <div class="banner-content">
+            <span class="section-tag">Stay Details</span>
+            <h2 class="section-title"><%= home.houseName %></h2>
+            <p class="banner-copy">A bright and welcoming stay in <%= home.location %>, perfect for guests who want comfort, convenience, and clarity when booking.</p>
           </div>
+        </section>
+
+        <div class="detail-grid">
+          <div class="detail-media">
+            <img
+              src="<%= home.photoUrl %>"
+              alt="<%= home.houseName %>"
+              onerror="this.onerror=null;this.src='https://placehold.co/800x400?text=No+Image';"
+            />
+          </div>
+
+          <aside class="detail-sidebar">
+            <div class="detail-sidebar-inner">
+              <h3>Quick Info</h3>
+              <p><strong>Location:</strong> <%= home.location %></p>
+              <p><strong>Rating:</strong> <%= home.rating %> / 5</p>
+              <p><strong>Guests:</strong> Up to 4 guests</p>
+              <p><strong>Host:</strong> <%= home.hostName || 'Verified host' %></p>
+              <div class="detail-price-box">
+                <span>Rs <%= home.price %></span>
+                <small>per night</small>
+              </div>
+              <div class="mt-4">
+                <% if (userType === 'guest') { %>
+                  <% if (alreadyBooked) { %>
+                    <button class="btn-primary w-full bg-gray-400 cursor-not-allowed" disabled>Already Booked</button>
+                    <p class="mt-3 text-sm text-gray-600">You have already booked this home.</p>
+                  <% } else { %>
+                    <form action="/bookings" method="POST">
+                      <input type="hidden" name="homeId" value="<%= home._id %>" />
+                      <button type="submit" class="btn-primary w-full">Book Now</button>
+                    </form>
+                  <% } %>
+                <% } else if (!isLoggedIn) { %>
+                  <a href="/login" class="btn-primary" style="width:100%;">Login to Book</a>
+                <% } %>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <section class="mt-10">
+          <div class="border-t border-gray-200 pt-8">
+            <h3 class="text-2xl font-semibold mb-4">About this stay</h3>
+            <p class="text-gray-600 leading-8"><%= home.description %></p>
+          </div>
+        </section>
       </main>
+      <%- include('../partials/footer') %>
   </body>
 </html>

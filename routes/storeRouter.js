@@ -1,17 +1,22 @@
-// External Module
-const express = require("express");
+const express = require('express');
 const storeRouter = express.Router();
+const storeController = require('../controllers/storeController');
 
-// Local Module
-const storeController = require("../controllers/storeController");
+// Middleware: require login
+const requireLogin = (req, res, next) => {
+  if (req.isLoggedIn) return next();
+  res.redirect('/login');
+};
 
-storeRouter.get("/", storeController.getIndex);
-storeRouter.get("/homes", storeController.getHomes);
-storeRouter.get("/bookings", storeController.getBookings);
-storeRouter.get("/favourites", storeController.getFavouriteList);
+// Public routes
+storeRouter.get('/', storeController.getIndex);
+storeRouter.get('/homes', storeController.getHomes);
+storeRouter.get('/homes/:homeId', storeController.getHomeDetails);
 
-storeRouter.get("/homes/:homeId", storeController.getHomeDetails);
-storeRouter.post("/favourites", storeController.postAddToFavourite);
-storeRouter.post("/favourites/delete/:homeId", storeController.postRemoveFromFavourite);
+// Protected routes (any logged-in user)
+storeRouter.get('/bookings', requireLogin, storeController.getBookings);
+storeRouter.post('/bookings', requireLogin, storeController.postBooking);
+// Cancel a booking (only owner can cancel) for any HTTP method
+storeRouter.all('/bookings/cancel/:bookingId', requireLogin, storeController.cancelBooking);
 
 module.exports = storeRouter;

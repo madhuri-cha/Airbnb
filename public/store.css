@@ -1,0 +1,17 @@
+/* Store/guest-specific styles */
+.bookings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; }
+.booking-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; display: flex; gap: 0.5rem; }
+.booking-card img { width: 40%; object-fit: cover; }
+.booking-card-body { padding: 1rem; flex: 1; }
+.empty-state { text-align: center; padding: 3rem; }
+
+.cancel-button {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.08s ease;
+}
+.cancel-button:hover { background: #ef4444; color: #fff; transform: translateY(-1px); }

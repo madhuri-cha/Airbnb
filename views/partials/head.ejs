@@ -3,3 +3,10 @@
   <head>
     <title><%= pageTitle %></title>
     <link rel="stylesheet" href="/output.css" />
+    <link rel="stylesheet" href="/home.css" />
+    <% if (typeof isHostPage !== 'undefined' && isHostPage) { %>
+    <link rel="stylesheet" href="/host.css" />
+    <% } %>
+    <% if (typeof isStorePage !== 'undefined' && isStorePage) { %>
+    <link rel="stylesheet" href="/store.css" />
+    <% } %>
